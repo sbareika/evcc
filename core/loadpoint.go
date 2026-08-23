@@ -113,6 +113,11 @@ type Loadpoint struct {
 	MinCurrent_    float64       `mapstructure:"minCurrent"`    // ignored, present for compatibility
 	MaxCurrent_    float64       `mapstructure:"maxCurrent"`    // ignored, present for compatibility
 
+	// runtime-only settings that may end up persisted into a device's static config
+	// (see updateLoadpointHandler's payload fallback)- tolerated here so decoding
+	// such a stray record doesn't hard-fail loadpoint startup
+	SmartFeedInPriorityDynamic_ bool `mapstructure:"smartFeedInPriorityDynamic"` // ignored, present for compatibility
+
 	title                      string   // UI title
 	priority                   int      // Priority
 	minCurrent                 float64  // PV mode: start current	Min+PV mode: min current
