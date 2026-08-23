@@ -207,10 +207,12 @@ export default defineComponent({
 			return { min, max };
 		},
 		slots(): Slot[] {
-			return this.slotsForLimit(this.currentLimit);
+			return this.slotsForActive();
 		},
 		chartSlots(): Slot[] {
-			return this.slotsForLimit(this.currentLimit ?? this.selectedLimit);
+			return this.currentLimit !== null
+				? this.slotsForActive()
+				: this.slotsForLimit(this.selectedLimit);
 		},
 		totalSlots() {
 			return this.slots.filter((s) => s.value !== undefined);
@@ -330,6 +332,16 @@ export default defineComponent({
 					limit !== null &&
 					value !== undefined &&
 					value >= limit
+			);
+		},
+		// like slotsForLimit, but delegates activation to the isSlotActive prop so
+		// consumers can combine multiple thresholds (e.g. fixed + plan-derived)
+		slotsForActive(): Slot[] {
+			return generateRateSlots(
+				this.rates,
+				this.weekdayShort,
+				(value) => this.limitDirection === "below" && this.isSlotActive(value),
+				(value) => this.limitDirection === "above" && this.isSlotActive(value)
 			);
 		},
 		slotHovered(index: number) {

@@ -56,6 +56,7 @@ const baseState = {
   batteryBoost: false,
   planActive: false,
   planEnergy: 0,
+  planMarginalPrice: null,
   planOverrun: 0,
   planStrategy: { continuous: false, precondition: 0 },
   planProjectedEnd: undefined,

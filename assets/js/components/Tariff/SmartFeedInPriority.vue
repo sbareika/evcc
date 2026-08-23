@@ -24,14 +24,25 @@
 				{{ $t("smartFeedInPriority.dynamic") }}
 			</label>
 			<div class="col-sm-8 col-lg-4 pe-lg-0">
-				<div class="form-check form-switch m-0">
+				<div class="input-group input-group-sm mb-1 mb-lg-0">
+					<div class="input-group-text">
+						<div class="form-check form-switch m-0">
+							<input
+								:id="formId + 'Dynamic'"
+								class="form-check-input"
+								type="checkbox"
+								role="switch"
+								:checked="dynamic"
+								@change="toggleDynamic"
+							/>
+						</div>
+					</div>
 					<input
-						:id="formId + 'Dynamic'"
-						class="form-check-input"
-						type="checkbox"
-						role="switch"
-						:checked="dynamic"
-						@change="toggleDynamic"
+						type="text"
+						class="form-control form-control-sm"
+						:class="{ disabled: !dynamic }"
+						readonly
+						:value="planPriceText"
 					/>
 				</div>
 			</div>
@@ -42,6 +53,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
 import SmartTariffBase from "./SmartTariffBase.vue";
+import formatter from "@/mixins/formatter";
 import api from "@/api";
 import { type CURRENCY } from "@/types/evcc";
 import { setLoadpointLastSmartFeedInPriorityLimit } from "@/uiLoadpoints";
@@ -49,6 +61,7 @@ import { setLoadpointLastSmartFeedInPriorityLimit } from "@/uiLoadpoints";
 export default defineComponent({
 	name: "SmartFeedInPriority",
 	components: { SmartTariffBase },
+	mixins: [formatter],
 	props: {
 		currentLimit: {
 			type: [Number, null] as PropType<number | null>,
@@ -61,11 +74,21 @@ export default defineComponent({
 		possible: Boolean,
 		tariff: Array,
 		dynamic: Boolean,
+		planMarginalPrice: {
+			type: [Number, null] as PropType<number | null>,
+			default: null,
+		},
 	},
 
 	computed: {
 		formId(): string {
 			return `smartFeedInPriority-${this.loadpointId}`;
+		},
+		planPriceText(): string {
+			if (this.planMarginalPrice === null) {
+				return this.$t("smartFeedInPriority.noPlanPrice");
+			}
+			return this.fmtPricePerKWh(this.planMarginalPrice, this.currency);
 		},
 		labels() {
 			const t = (key: string) => this.$t(`smartFeedInPriority.${key}`);
@@ -81,11 +104,17 @@ export default defineComponent({
 	},
 	methods: {
 		isSlotActive(value: number | undefined): boolean {
-			if (value === undefined || this.currentLimit === null) {
+			if (value === undefined) {
 				return false;
 			}
-			// Smart feed-in priority: pause when rates are above or equal to limit
-			return value >= this.currentLimit;
+			const limits: number[] = [];
+			if (this.currentLimit !== null) limits.push(this.currentLimit);
+			if (this.dynamic && this.planMarginalPrice !== null) limits.push(this.planMarginalPrice);
+			if (!limits.length) {
+				return false;
+			}
+			// Smart feed-in priority: pause when rates are above or equal to the stricter limit
+			return value >= Math.min(...limits);
 		},
 		async saveLimit(limit: number, active: boolean) {
 			// save last selected value to be suggest again when reactivating limit

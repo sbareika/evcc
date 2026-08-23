@@ -97,6 +97,7 @@ const (
 	PlanProjectedEnd   = "planProjectedEnd"   // charge plan ends (end of last slot)
 	PlanOverrun        = "planOverrun"        // charge plan goal not reachable in time
 	PlanStrategy       = "planStrategy"       // charge plan strategy (precondition, continuous)
+	PlanMarginalPrice  = "planMarginalPrice"  // charge plan's highest reserved slot price
 
 	// repeating plans
 	RepeatingPlans = "repeatingPlans" // key to access all repeating plans in db

@@ -30,6 +30,7 @@
 				:possible="smartFeedInPriorityAvailable"
 				:tariff="forecast?.feedin"
 				:dynamic="loadpoint?.smartFeedInPriorityDynamic ?? false"
+				:plan-marginal-price="loadpoint?.planMarginalPrice ?? null"
 				class="mt-2 mb-4"
 			/>
 			<LoadpointSettingsBatteryBoost

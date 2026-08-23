@@ -130,6 +130,13 @@ func (lp *Loadpoint) plannerActive() (active bool) {
 
 	defer func() {
 		lp.planRates = plan
+
+		var marginalPrice *float64
+		if price, ok := lp.planMarginalPrice(); ok {
+			marginalPrice = &price
+		}
+		lp.publish(keys.PlanMarginalPrice, marginalPrice)
+
 		lp.publish(keys.Plan, plan)
 		lp.publish(keys.PlanProjectedStart, planStart)
 		lp.publish(keys.PlanProjectedEnd, planEnd)

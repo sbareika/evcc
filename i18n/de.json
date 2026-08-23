@@ -1808,6 +1808,7 @@
     "description": "Pausiert den Ladevorgang bei hohen Preisen, um der profitablen Netzeinspeisung Vorrang zu geben.",
     "dynamic": "Ladeplan folgen",
     "dynamicDescription": "Pausiert den Eigenverbrauch zusätzlich, sobald der Einspeisetarif über dem Preis liegt, den der aktive Ladeplan für dieselbe Energiemenge vorsieht. Ohne aktiven Ladeplan ohne Wirkung.",
+    "noPlanPrice": "Kein aktiver Ladeplan",
     "priceLabel": "Einspeisetarif",
     "priceLimit": "Einspeisegrenze",
     "resetWarning": "Es ist kein dynamischer Einspeisetarif konfiguriert. Dennoch ist ein Grenze von {limit} eingerichtet. Konfiguration aufräumen?",

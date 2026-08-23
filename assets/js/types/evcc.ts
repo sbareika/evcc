@@ -677,6 +677,8 @@ export interface Loadpoint {
   planActive: boolean;
   /** Energy goal of the charging plan in kWh. */
   planEnergy: number;
+  /** Highest rate among the currently reserved charging plan slots. Null if no plan is active. */
+  planMarginalPrice: number | null;
   /** Duration in seconds the charging plan is projected to miss its target time. */
   planOverrun: number;
   /** Charging plan strategy. */
