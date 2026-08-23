@@ -75,7 +75,7 @@
 		<TariffChart
 			v-if="rates.length"
 			:slots="chartSlots"
-			:inactive="!active"
+			:inactive="!active && !extraActive"
 			@slot-hovered="slotHovered"
 			@slot-selected="slotSelected"
 		/>
@@ -126,6 +126,9 @@ export default defineComponent({
 		resetWarningKey: String,
 		limitDirection: { type: String as PropType<LimitDirection>, default: "below" },
 		highlightColor: { type: String as PropType<HighlightColor>, default: "text-primary" },
+		// externally-managed condition (e.g. a plan-based toggle) that also activates
+		// this control even while the local limit switch (active) is off
+		extraActive: Boolean,
 		isSlotActive: {
 			type: Function as PropType<(value: number | undefined) => boolean>,
 			required: true,
@@ -210,7 +213,7 @@ export default defineComponent({
 			return this.slotsForActive();
 		},
 		chartSlots(): Slot[] {
-			return this.currentLimit !== null
+			return this.currentLimit !== null || this.extraActive
 				? this.slotsForActive()
 				: this.slotsForLimit(this.selectedLimit);
 		},

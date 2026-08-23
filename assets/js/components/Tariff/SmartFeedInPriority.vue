@@ -9,6 +9,7 @@
 		:tariff="tariff"
 		:form-id="formId"
 		:is-slot-active="isSlotActive"
+		:extra-active="dynamic"
 		options-extra-high
 		options-start-at-zero
 		limit-direction="above"
