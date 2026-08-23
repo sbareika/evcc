@@ -250,18 +250,45 @@ func (lp *Loadpoint) plannerActive() (active bool) {
 	return active
 }
 
-// planMarginalPrice returns the highest rate among the slots of the last computed
-// charging plan (its "marginal" cost)- the price the plan would still be willing to
-// pay for the currently most expensive slot it has reserved to meet the goal in time
+// planMarginalPrice returns the highest rate among the slots of the current charging
+// plan (its "marginal" cost)- the price the plan would still be willing to pay for the
+// currently most expensive slot it has reserved to meet the goal in time. Falls back to
+// a fresh, connection-independent preview so the info stays available while no vehicle
+// is connected (plannerActive itself requires a connected vehicle).
 func (lp *Loadpoint) planMarginalPrice() (float64, bool) {
-	if len(lp.planRates) == 0 {
+	if len(lp.planRates) > 0 {
+		return marginalPrice(lp.planRates), true
+	}
+	return lp.previewPlanMarginalPrice()
+}
+
+// previewPlanMarginalPrice recomputes the configured plan regardless of connection state
+func (lp *Loadpoint) previewPlanMarginalPrice() (float64, bool) {
+	planTime := lp.EffectivePlanTime()
+	if planTime.IsZero() {
 		return 0, false
 	}
 
-	price := lp.planRates[0].Value
-	for _, r := range lp.planRates[1:] {
-		price = max(price, r.Value)
+	goal, _ := lp.GetPlanGoal()
+	requiredDuration := lp.GetPlanRequiredDuration(goal, lp.EffectiveMaxPower())
+	if requiredDuration <= 0 {
+		return 0, false
 	}
 
-	return price, true
+	strategy := lp.getEffectivePlanStrategy()
+	plan := lp.GetPlan(planTime, requiredDuration, strategy.Precondition, strategy.Continuous)
+	if len(plan) == 0 {
+		return 0, false
+	}
+
+	return marginalPrice(plan), true
+}
+
+// marginalPrice returns the highest rate value among the given slots
+func marginalPrice(rates api.Rates) float64 {
+	price := rates[0].Value
+	for _, r := range rates[1:] {
+		price = max(price, r.Value)
+	}
+	return price
 }
