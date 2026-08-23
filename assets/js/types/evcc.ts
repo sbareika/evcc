@@ -502,6 +502,8 @@ export interface ConfigLoadpoint {
   minCurrent: number;
   maxCurrent: number;
   smartCostLimit: number | null;
+  smartFeedInPriorityLimit?: number | null;
+  smartFeedInPriorityDynamic?: boolean;
   planEnergy?: number;
   planTime?: string;
   planStrategy?: PlanStrategy;
@@ -727,6 +729,8 @@ export interface Loadpoint {
   smartFeedInPriorityActive: boolean;
   /** Feed-in rate limit above which charging is paused. */
   smartFeedInPriorityLimit: number | null;
+  /** Feed-in rate limit follows the active charging plan's marginal price instead of (or in addition to) the fixed limit. */
+  smartFeedInPriorityDynamic: boolean;
   /**
    * Start of the next charging pause for prioritized feed-in.
    * @format date-time

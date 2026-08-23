@@ -19,6 +19,21 @@ func (lp *Loadpoint) checkSmartLimit(limit *float64, rates api.Rates, checkBelow
 	return active, nextStart
 }
 
+// effectiveSmartFeedInPriorityLimit combines the fixed limit with the active charging
+// plan's marginal price (if enabled), pausing self-consumption whenever either would.
+// The stricter (lower) of the two configured limits wins.
+func (lp *Loadpoint) effectiveSmartFeedInPriorityLimit() *float64 {
+	limit := lp.GetSmartFeedInPriorityLimit()
+
+	if lp.GetSmartFeedInPriorityDynamic() {
+		if price, ok := lp.planMarginalPrice(); ok && (limit == nil || price < *limit) {
+			limit = &price
+		}
+	}
+
+	return limit
+}
+
 func (lp *Loadpoint) smartLimitActive(limit *float64, rates api.Rates, checkBelow bool) bool {
 	rate, err := rates.At(time.Now())
 	if err != nil || limit == nil {

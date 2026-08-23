@@ -629,6 +629,20 @@ func (mr *MockAPIMockRecorder) GetSmartCostLimit() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSmartCostLimit", reflect.TypeOf((*MockAPI)(nil).GetSmartCostLimit))
 }
 
+// GetSmartFeedInPriorityDynamic mocks base method.
+func (m *MockAPI) GetSmartFeedInPriorityDynamic() bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSmartFeedInPriorityDynamic")
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// GetSmartFeedInPriorityDynamic indicates an expected call of GetSmartFeedInPriorityDynamic.
+func (mr *MockAPIMockRecorder) GetSmartFeedInPriorityDynamic() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSmartFeedInPriorityDynamic", reflect.TypeOf((*MockAPI)(nil).GetSmartFeedInPriorityDynamic))
+}
+
 // GetSmartFeedInPriorityLimit mocks base method.
 func (m *MockAPI) GetSmartFeedInPriorityLimit() *float64 {
 	m.ctrl.T.Helper()
@@ -1069,6 +1083,18 @@ func (m *MockAPI) SetSmartCostLimit(limit *float64) {
 func (mr *MockAPIMockRecorder) SetSmartCostLimit(limit any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetSmartCostLimit", reflect.TypeOf((*MockAPI)(nil).SetSmartCostLimit), limit)
+}
+
+// SetSmartFeedInPriorityDynamic mocks base method.
+func (m *MockAPI) SetSmartFeedInPriorityDynamic(dynamic bool) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetSmartFeedInPriorityDynamic", dynamic)
+}
+
+// SetSmartFeedInPriorityDynamic indicates an expected call of SetSmartFeedInPriorityDynamic.
+func (mr *MockAPIMockRecorder) SetSmartFeedInPriorityDynamic(dynamic any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetSmartFeedInPriorityDynamic", reflect.TypeOf((*MockAPI)(nil).SetSmartFeedInPriorityDynamic), dynamic)
 }
 
 // SetSmartFeedInPriorityLimit mocks base method.

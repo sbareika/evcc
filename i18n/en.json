@@ -1813,6 +1813,8 @@
   "smartFeedInPriority": {
     "activeHoursLabel": "Paused time",
     "description": "Pauses charging during high prices to prioritize profitable grid feed-in.",
+    "dynamic": "Follow charging plan",
+    "dynamicDescription": "Also pause self-consumption whenever the feed-in rate exceeds the active charging plan's price for the same energy. Has no effect without an active plan.",
     "priceLabel": "Feed-in rate",
     "priceLimit": "Feed-in limit",
     "resetWarning": "There is no dynamic feed-in tariff configured. However, there is still a limit of {limit}. Clean up your configuration?",

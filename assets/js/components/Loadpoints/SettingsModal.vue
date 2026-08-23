@@ -29,6 +29,7 @@
 				:multiple-loadpoints="multipleLoadpoints"
 				:possible="smartFeedInPriorityAvailable"
 				:tariff="forecast?.feedin"
+				:dynamic="loadpoint?.smartFeedInPriorityDynamic ?? false"
 				class="mt-2 mb-4"
 			/>
 			<LoadpointSettingsBatteryBoost

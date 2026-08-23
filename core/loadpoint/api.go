@@ -195,6 +195,10 @@ type API interface {
 	GetSmartFeedInPriorityLimit() *float64
 	// SetSmartFeedInPriorityLimit sets the smart feed-in limit
 	SetSmartFeedInPriorityLimit(limit *float64)
+	// GetSmartFeedInPriorityDynamic returns whether the smart feed-in limit follows the active charging plan
+	GetSmartFeedInPriorityDynamic() bool
+	// SetSmartFeedInPriorityDynamic sets whether the smart feed-in limit follows the active charging plan
+	SetSmartFeedInPriorityDynamic(dynamic bool)
 
 	//
 	// power and energy

@@ -17,21 +17,22 @@ type StaticConfig struct {
 
 type DynamicConfig struct {
 	// dynamic config
-	Title                    string    `json:"title"`
-	DefaultMode              string    `json:"defaultMode"`
-	Priority                 int       `json:"priority"`
-	PhasesConfigured         int       `json:"phasesConfigured"`
-	MinCurrent               float64   `json:"minCurrent"`
-	MaxCurrent               float64   `json:"maxCurrent"`
-	SmartCostLimit           *float64  `json:"smartCostLimit"`
-	SmartFeedInPriorityLimit *float64  `json:"smartFeedInPriorityLimit"`
-	PlanEnergy               float64   `json:"planEnergy"`
-	PlanTime                 time.Time `json:"planTime"`
-	PlanPrecondition_        int64     `json:"planPrecondition" mapstructure:"planPrecondition"` // TODO deprecated, keep for compatibility
-	BatteryBoostLimit        int       `json:"batteryBoostLimit"`
-	LimitEnergy              float64   `json:"limitEnergy"`
-	LimitSoc                 int       `json:"limitSoc"`
-	MinSoc                   int       `json:"minSoc"`
+	Title                      string    `json:"title"`
+	DefaultMode                string    `json:"defaultMode"`
+	Priority                   int       `json:"priority"`
+	PhasesConfigured           int       `json:"phasesConfigured"`
+	MinCurrent                 float64   `json:"minCurrent"`
+	MaxCurrent                 float64   `json:"maxCurrent"`
+	SmartCostLimit             *float64  `json:"smartCostLimit"`
+	SmartFeedInPriorityLimit   *float64  `json:"smartFeedInPriorityLimit"`
+	SmartFeedInPriorityDynamic bool      `json:"smartFeedInPriorityDynamic"`
+	PlanEnergy                 float64   `json:"planEnergy"`
+	PlanTime                   time.Time `json:"planTime"`
+	PlanPrecondition_          int64     `json:"planPrecondition" mapstructure:"planPrecondition"` // TODO deprecated, keep for compatibility
+	BatteryBoostLimit          int       `json:"batteryBoostLimit"`
+	LimitEnergy                float64   `json:"limitEnergy"`
+	LimitSoc                   int       `json:"limitSoc"`
+	MinSoc                     int       `json:"minSoc"`
 
 	PlanStrategy api.PlanStrategy `json:"planStrategy"`
 
@@ -70,6 +71,7 @@ func (payload DynamicConfig) Apply(lp API) error {
 	lp.SetPriority(payload.Priority)
 	lp.SetSmartCostLimit(payload.SmartCostLimit)
 	lp.SetSmartFeedInPriorityLimit(payload.SmartFeedInPriorityLimit)
+	lp.SetSmartFeedInPriorityDynamic(payload.SmartFeedInPriorityDynamic)
 	lp.SetThresholds(payload.Thresholds)
 	lp.SetPlanEnergy(payload.PlanTime, payload.PlanEnergy)
 	lp.SetPlanStrategy(payload.PlanStrategy)

@@ -129,6 +129,7 @@ func (lp *Loadpoint) plannerActive() (active bool) {
 	var planOverrun time.Duration
 
 	defer func() {
+		lp.planRates = plan
 		lp.publish(keys.Plan, plan)
 		lp.publish(keys.PlanProjectedStart, planStart)
 		lp.publish(keys.PlanProjectedEnd, planEnd)
@@ -240,4 +241,20 @@ func (lp *Loadpoint) plannerActive() (active bool) {
 	}
 
 	return active
+}
+
+// planMarginalPrice returns the highest rate among the slots of the last computed
+// charging plan (its "marginal" cost)- the price the plan would still be willing to
+// pay for the currently most expensive slot it has reserved to meet the goal in time
+func (lp *Loadpoint) planMarginalPrice() (float64, bool) {
+	if len(lp.planRates) == 0 {
+		return 0, false
+	}
+
+	price := lp.planRates[0].Value
+	for _, r := range lp.planRates[1:] {
+		price = max(price, r.Value)
+	}
+
+	return price, true
 }

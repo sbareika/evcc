@@ -961,6 +961,28 @@ func (lp *Loadpoint) SetSmartFeedInPriorityLimit(val *float64) {
 	}
 }
 
+// GetSmartFeedInPriorityDynamic gets whether the smart feed-in priority limit follows the active charging plan
+func (lp *Loadpoint) GetSmartFeedInPriorityDynamic() bool {
+	lp.RLock()
+	defer lp.RUnlock()
+	return lp.smartFeedInPriorityDynamic
+}
+
+// SetSmartFeedInPriorityDynamic sets whether the smart feed-in priority limit follows the active charging plan
+func (lp *Loadpoint) SetSmartFeedInPriorityDynamic(val bool) {
+	lp.Lock()
+	defer lp.Unlock()
+
+	lp.log.DEBUG.Println("set smart feed-in dynamic:", val)
+
+	if lp.smartFeedInPriorityDynamic != val {
+		lp.smartFeedInPriorityDynamic = val
+
+		lp.settings.SetBool(keys.SmartFeedInPriorityDynamic, val)
+		lp.publish(keys.SmartFeedInPriorityDynamic, val)
+	}
+}
+
 // GetCircuit returns the assigned circuit
 func (lp *Loadpoint) GetCircuit() api.Circuit {
 	lp.RLock()

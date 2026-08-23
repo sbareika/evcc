@@ -17,6 +17,26 @@
 		@delete-limit="deleteLimit"
 		@apply-to-all="applyToAll"
 	/>
+	<template v-if="possible">
+		<p>{{ $t("smartFeedInPriority.dynamicDescription") }}</p>
+		<div class="row mb-3 align-items-center" style="max-width: 1000px">
+			<label :for="formId + 'Dynamic'" class="col-sm-4 col-form-label pt-0 pt-sm-2">
+				{{ $t("smartFeedInPriority.dynamic") }}
+			</label>
+			<div class="col-sm-8 col-lg-4 pe-lg-0">
+				<div class="form-check form-switch m-0">
+					<input
+						:id="formId + 'Dynamic'"
+						class="form-check-input"
+						type="checkbox"
+						role="switch"
+						:checked="dynamic"
+						@change="toggleDynamic"
+					/>
+				</div>
+			</div>
+		</div>
+	</template>
 </template>
 
 <script lang="ts">
@@ -40,7 +60,9 @@ export default defineComponent({
 		multipleLoadpoints: Boolean,
 		possible: Boolean,
 		tariff: Array,
+		dynamic: Boolean,
 	},
+
 	computed: {
 		formId(): string {
 			return `smartFeedInPriority-${this.loadpointId}`;
@@ -92,6 +114,10 @@ export default defineComponent({
 			} else {
 				await api.post(`smartfeedinprioritylimit/${encodeURIComponent(selectedLimit)}`);
 			}
+		},
+		async toggleDynamic(e: Event) {
+			const value = (e.target as HTMLInputElement).checked;
+			await api.post(`loadpoints/${this.loadpointId}/smartfeedinprioritydynamic/${value}`);
 		},
 	},
 });

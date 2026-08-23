@@ -113,18 +113,19 @@ type Loadpoint struct {
 	MinCurrent_    float64       `mapstructure:"minCurrent"`    // ignored, present for compatibility
 	MaxCurrent_    float64       `mapstructure:"maxCurrent"`    // ignored, present for compatibility
 
-	title                    string   // UI title
-	priority                 int      // Priority
-	minCurrent               float64  // PV mode: start current	Min+PV mode: min current
-	maxCurrent               float64  // Max allowed current. Physically ensured by the charger
-	phasesConfigured         int      // Charger configured phase mode 0/1/3
-	limitSoc                 int      // Session limit for soc
-	limitEnergy              float64  // Session limit for energy
-	minSoc                   int      // Forced charging below this soc (heating: temperature), 0=disabled
-	smartCostLimit           *float64 // always charge if consumption cost is below this value
-	smartFeedInPriorityLimit *float64 // prevent charging if feed-in cost is above this value
-	batteryBoost             int      // battery boost state
-	batteryBoostLimit        int      // battery boost soc limit (0-100, 100=disabled)
+	title                      string   // UI title
+	priority                   int      // Priority
+	minCurrent                 float64  // PV mode: start current	Min+PV mode: min current
+	maxCurrent                 float64  // Max allowed current. Physically ensured by the charger
+	phasesConfigured           int      // Charger configured phase mode 0/1/3
+	limitSoc                   int      // Session limit for soc
+	limitEnergy                float64  // Session limit for energy
+	minSoc                     int      // Forced charging below this soc (heating: temperature), 0=disabled
+	smartCostLimit             *float64 // always charge if consumption cost is below this value
+	smartFeedInPriorityLimit   *float64 // prevent charging if feed-in cost is above this value
+	smartFeedInPriorityDynamic bool     // prevent charging if feed-in cost is above the active charging plan's marginal price
+	batteryBoost               int      // battery boost state
+	batteryBoostLimit          int      // battery boost soc limit (0-100, 100=disabled)
 
 	mode                api.ChargeMode
 	enabled             bool      // Charger enabled state
@@ -161,6 +162,7 @@ type Loadpoint struct {
 	planActive       bool             // charge plan exists and has a currently active slot
 	planOverrunSent  bool             // notification has been sent already
 	planLocked       PlanLock         // locked plan
+	planRates        api.Rates        // last computed charging plan, used to derive the plan's marginal price
 
 	// cached state
 	status         api.ChargeStatus // Charger status
@@ -383,6 +385,9 @@ func (lp *Loadpoint) restoreSettings() {
 	}
 	if v, err := lp.settings.Float(keys.SmartFeedInPriorityLimit); err == nil {
 		lp.SetSmartFeedInPriorityLimit(&v)
+	}
+	if v, err := lp.settings.Bool(keys.SmartFeedInPriorityDynamic); err == nil {
+		lp.SetSmartFeedInPriorityDynamic(v)
 	}
 	if v, err := lp.settings.Int(keys.BatteryBoostLimit); err == nil {
 		lp.SetBatteryBoostLimit(int(v))
@@ -752,6 +757,7 @@ func (lp *Loadpoint) Prepare(site site.API, uiChan chan<- util.Param, pushChan c
 	lp.publish(keys.PhasesActive, lp.ActivePhases())
 	lp.publish(keys.SmartCostLimit, lp.smartCostLimit)
 	lp.publish(keys.SmartFeedInPriorityLimit, lp.smartFeedInPriorityLimit)
+	lp.publish(keys.SmartFeedInPriorityDynamic, lp.smartFeedInPriorityDynamic)
 	lp.publishTimer(phaseTimer, 0, timerInactive)
 	lp.publishTimer(pvTimer, 0, timerInactive)
 	lp.publishEnergyStats()
@@ -2152,10 +2158,6 @@ func (lp *Loadpoint) Update(sitePower, batteryPower float64, consumption, feedin
 	lp.publish(keys.SmartCostActive, smartCostActive)
 	lp.publish(keys.SmartCostNextStart, smartCostNextStart)
 
-	smartFeedInPriorityActive, smartFeedInPriorityNextStart := lp.checkSmartLimit(lp.GetSmartFeedInPriorityLimit(), feedin, false)
-	lp.publish(keys.SmartFeedInPriorityActive, smartFeedInPriorityActive)
-	lp.publish(keys.SmartFeedInPriorityNextStart, smartFeedInPriorityNextStart)
-
 	// long-running tasks
 	lp.processTasks()
 
@@ -2248,6 +2250,12 @@ func (lp *Loadpoint) Update(sitePower, batteryPower float64, consumption, feedin
 
 	// update and publish plan without being short-circuited by modes etc.
 	plannerActive := lp.plannerActive()
+
+	// smart feed-in priority- evaluated after the plan so a dynamic limit can
+	// use the plan's marginal price computed above
+	smartFeedInPriorityActive, smartFeedInPriorityNextStart := lp.checkSmartLimit(lp.effectiveSmartFeedInPriorityLimit(), feedin, false)
+	lp.publish(keys.SmartFeedInPriorityActive, smartFeedInPriorityActive)
+	lp.publish(keys.SmartFeedInPriorityNextStart, smartFeedInPriorityNextStart)
 
 	// update and publish min soc not reached state
 	minSocNotReached := lp.minSocNotReached()

@@ -262,6 +262,7 @@ func (m *MQTT) listenLoadpointSetters(topic string, site site.API, lp loadpoint.
 		{"disableDelay", durationSetter(pass(lp.SetDisableDelay))},
 		{"smartCostLimit", floatPtrSetter(pass(lp.SetSmartCostLimit))},
 		{"smartFeedInPriorityLimit", floatPtrSetter(pass(lp.SetSmartFeedInPriorityLimit))},
+		{"smartFeedInPriorityDynamic", boolSetter(pass(lp.SetSmartFeedInPriorityDynamic))},
 		{"batteryBoost", boolSetter(lp.SetBatteryBoost)},
 		{"batteryBoostLimit", intSetter(pass(lp.SetBatteryBoostLimit))},
 		{"planStrategy", planStrategySetter(lp.SetPlanStrategy)},
