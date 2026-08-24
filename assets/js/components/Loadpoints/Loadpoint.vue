@@ -239,6 +239,7 @@ export default defineComponent({
 		smartCostActive: Boolean,
 		smartCostNextStart: String as PropType<string | null>,
 		smartFeedInPriorityLimit: { type: Number as PropType<number | null>, default: null },
+		smartFeedInPriorityEffectiveLimit: { type: Number as PropType<number | null>, default: null },
 		smartFeedInPriorityAvailable: Boolean,
 		smartFeedInPriorityActive: Boolean,
 		smartFeedInPriorityNextStart: String as PropType<string | null>,

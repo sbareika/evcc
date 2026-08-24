@@ -133,6 +133,7 @@ export default defineComponent({
 		smartFeedInPriorityActive: Boolean,
 		smartFeedInPriorityDisabled: Boolean,
 		smartFeedInPriorityLimit: { type: Number, default: null },
+		smartFeedInPriorityEffectiveLimit: { type: Number, default: null },
 		smartFeedInPriorityNextStart: String,
 		suggestion: Object as PropType<LoadpointSuggestion | null>,
 		tariffCo2: { type: Number, default: 0 },
@@ -204,7 +205,8 @@ export default defineComponent({
 			return this.fmtPricePerKWh(this.tariffFeedIn, this.currency, true);
 		},
 		smartFeedInPriorityLimitFmt() {
-			return this.fmtPricePerKWh(this.smartFeedInPriorityLimit, this.currency, true);
+			const limit = this.smartFeedInPriorityEffectiveLimit ?? this.smartFeedInPriorityLimit;
+			return this.fmtPricePerKWh(limit, this.currency, true);
 		},
 		chargerStatusType(): string | undefined {
 			if (this.statusOverrideActive && this.statusOverride) {

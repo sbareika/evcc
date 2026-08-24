@@ -54,10 +54,11 @@ const (
 	SmartCostLimit     = "smartCostLimit"     // smart cost limit, fast charge when costs are below
 	SmartCostNextStart = "smartCostNextStart" // smart cost next start, time of next fast charging
 
-	SmartFeedInPriorityActive    = "smartFeedInPriorityActive"    // smart feed-in priority active
-	SmartFeedInPriorityLimit     = "smartFeedInPriorityLimit"     // smart feed-in priority limit, pause self-consumption when feed-in rates are above
-	SmartFeedInPriorityNextStart = "smartFeedInPriorityNextStart" // smart feed-in priority next start, time of next pause
-	SmartFeedInPriorityDynamic   = "smartFeedInPriorityDynamic"   // pause self-consumption when feed-in rate exceeds the active charging plan's marginal price
+	SmartFeedInPriorityActive         = "smartFeedInPriorityActive"         // smart feed-in priority active
+	SmartFeedInPriorityLimit          = "smartFeedInPriorityLimit"          // smart feed-in priority limit, pause self-consumption when feed-in rates are above
+	SmartFeedInPriorityNextStart      = "smartFeedInPriorityNextStart"      // smart feed-in priority next start, time of next pause
+	SmartFeedInPriorityDynamic        = "smartFeedInPriorityDynamic"        // pause self-consumption when feed-in rate exceeds the active charging plan's marginal price
+	SmartFeedInPriorityEffectiveLimit = "smartFeedInPriorityEffectiveLimit" // limit actually in effect, combining the fixed limit with the plan's marginal price
 
 	// effective values
 	EffectivePriority   = "effectivePriority"   // effective priority

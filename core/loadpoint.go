@@ -2258,9 +2258,11 @@ func (lp *Loadpoint) Update(sitePower, batteryPower float64, consumption, feedin
 
 	// smart feed-in priority- evaluated after the plan so a dynamic limit can
 	// use the plan's marginal price computed above
-	smartFeedInPriorityActive, smartFeedInPriorityNextStart := lp.checkSmartLimit(lp.effectiveSmartFeedInPriorityLimit(), feedin, false)
+	effectiveSmartFeedInPriorityLimit := lp.effectiveSmartFeedInPriorityLimit()
+	smartFeedInPriorityActive, smartFeedInPriorityNextStart := lp.checkSmartLimit(effectiveSmartFeedInPriorityLimit, feedin, false)
 	lp.publish(keys.SmartFeedInPriorityActive, smartFeedInPriorityActive)
 	lp.publish(keys.SmartFeedInPriorityNextStart, smartFeedInPriorityNextStart)
+	lp.publish(keys.SmartFeedInPriorityEffectiveLimit, effectiveSmartFeedInPriorityLimit)
 
 	// update and publish min soc not reached state
 	minSocNotReached := lp.minSocNotReached()

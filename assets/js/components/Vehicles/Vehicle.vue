@@ -164,6 +164,7 @@ export default defineComponent({
 		smartFeedInPriorityActive: Boolean,
 		smartFeedInPriorityNextStart: String,
 		smartFeedInPriorityLimit: Number,
+		smartFeedInPriorityEffectiveLimit: Number,
 		socBasedCharging: Boolean,
 		suggestion: Object as PropType<LoadpointSuggestion | null>,
 		socBasedPlanning: Boolean,

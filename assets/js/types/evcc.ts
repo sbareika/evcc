@@ -733,6 +733,8 @@ export interface Loadpoint {
   smartFeedInPriorityLimit: number | null;
   /** Feed-in rate limit follows the active charging plan's marginal price instead of (or in addition to) the fixed limit. */
   smartFeedInPriorityDynamic: boolean;
+  /** Limit actually in effect, combining the fixed limit with the active charging plan's marginal price. */
+  smartFeedInPriorityEffectiveLimit: number | null;
   /**
    * Start of the next charging pause for prioritized feed-in.
    * @format date-time
