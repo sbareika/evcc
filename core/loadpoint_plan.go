@@ -257,7 +257,11 @@ func (lp *Loadpoint) plannerActive() (active bool) {
 // is connected (plannerActive itself requires a connected vehicle).
 func (lp *Loadpoint) planMarginalPrice() (float64, bool) {
 	if len(lp.planRates) > 0 {
-		return marginalPrice(lp.planRates), true
+		strategy := lp.getEffectivePlanStrategy()
+		if rates := excludePrecondition(lp.planRates, lp.EffectivePlanTime(), strategy.Precondition); len(rates) > 0 {
+			return marginalPrice(rates), true
+		}
+		return 0, false
 	}
 	return lp.previewPlanMarginalPrice()
 }
@@ -277,11 +281,29 @@ func (lp *Loadpoint) previewPlanMarginalPrice() (float64, bool) {
 
 	strategy := lp.getEffectivePlanStrategy()
 	plan := lp.GetPlan(planTime, requiredDuration, strategy.Precondition, strategy.Continuous)
-	if len(plan) == 0 {
-		return 0, false
+	if rates := excludePrecondition(plan, planTime, strategy.Precondition); len(rates) > 0 {
+		return marginalPrice(rates), true
+	}
+	return 0, false
+}
+
+// excludePrecondition drops slots inside the mandatory precondition ("late charging")
+// window right before the target time- these charge unconditionally regardless of
+// price and would otherwise skew the marginal price upward
+func excludePrecondition(rates api.Rates, planTime time.Time, precondition time.Duration) api.Rates {
+	if precondition <= 0 || planTime.IsZero() {
+		return rates
 	}
 
-	return marginalPrice(plan), true
+	cutoff := planTime.Add(-precondition)
+	res := make(api.Rates, 0, len(rates))
+	for _, r := range rates {
+		if !r.End.After(cutoff) {
+			res = append(res, r)
+		}
+	}
+
+	return res
 }
 
 // marginalPrice returns the highest rate value among the given slots
