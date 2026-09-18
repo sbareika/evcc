@@ -10,6 +10,10 @@ name: Fork Build
 on:
     workflow_dispatch:
         inputs:
+            ref:
+                description: Branch, tag or SHA to build (defaults to the branch this is run from)
+                type: string
+                default: ""
             target:
                 description: Build target
                 type: choice
@@ -64,6 +68,7 @@ jobs:
         steps:
             - uses: actions/checkout@v7
               with:
+                  ref: ${{ inputs.ref || github.ref }}
                   fetch-depth: 0
                   persist-credentials: false
 
@@ -71,13 +76,17 @@ jobs:
               with:
                   cache-scope: fork-build # isolated cache, cannot poison the nightly/main cache
 
+            - name: Resolve SHA
+              id: sha
+              run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
             - name: Build binary
               env:
                   CGO_ENABLED: 0
                   GOOS: linux
                   GOARCH: ${{ matrix.arch }}
                   GOARM: 6
-                  SHA: ${{ github.sha }}
+                  SHA: ${{ steps.sha.outputs.sha }}
                   TAG: ${{ inputs.tag }}
               run: |
                   go build -trimpath -tags release \
@@ -103,6 +112,7 @@ jobs:
         steps:
             - uses: actions/checkout@v7
               with:
+                  ref: ${{ inputs.ref || github.ref }}
                   fetch-depth: 0
                   persist-credentials: false
 
